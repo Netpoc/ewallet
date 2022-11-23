@@ -37,7 +37,7 @@ exports.userRegister = [
             console.log(err);
         }
     }
-]
+];
 
 //User Login Logic
 exports.userLogin = [
