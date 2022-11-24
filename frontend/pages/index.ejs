@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Receive Payment</title>
-      </head>
-      <body>
-        <form>
-          <script src="https://checkout.flutterwave.com/v3.js"></script>
-          <button type="button" onClick="makePayment()">Pay Now</button>
-        </form>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <header>
+        <%- include('../partials/header'); %>
+    </header>
+    <form>
+      
+      <button type="button" onClick="makePayment()">Pay Now</button>
+    </form>
 
     <script>
       function makePayment() {
@@ -22,7 +23,7 @@
           payment_options: "card",
 
           // specified redirect URL
-          redirect_url: "http://localhost:5000/user/response",
+          redirect_url: "http://localhost:5000/response",
 
           // use customer details if user is not logged in, else add user_id to the request
           customer: {
