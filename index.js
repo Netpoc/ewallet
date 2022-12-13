@@ -31,21 +31,21 @@ app.get("/pay", (req, res) => {
 });
 
 
-app.get("/bank", async(req, res) => {
-   try {
-    const payload = {
-        "country": "NG"
+app.get("/bank", async (req, res) => {
+    try {
+        const payload = {
+            "country": "NG"
+        }
+        const response = await flw.Bank.country(payload)
+        res.send(response)
+        console.log(response)
+    } catch (error) {
+        console.log(error)
     }
-    const response = await flw.Bank.country(payload)
-    res.send(response)
-    console.log(response)
-   } catch (error) {
-    console.log(error)
-   }
 })
 
-app.get("/respos", async(req,res) => {
-    const {transaction_id} = req.query;
+app.get("/respos", async (req, res) => {
+    const { transaction_id } = req.query;
 
     const url = `https://api.flutterwave.com/v3/transactions/${transaction_id}/verify`;
 
@@ -59,11 +59,11 @@ app.get("/respos", async(req,res) => {
         },
     });
     console.log(response.data.data)
-    
+
 });
 
 app.get("/response", async (req, res) => {
-    const {transaction_id} = req.query;
+    const { transaction_id } = req.query;
 
     const url = `https://api.flutterwave.com/v3/transactions/${transaction_id}/verify`;
     const response = await axios({
@@ -78,33 +78,41 @@ app.get("/response", async (req, res) => {
 
     const { status, currency, id, amount, customer } = response.data.data;
 
-    //check if customer exist in our database
-    const user = await User.findOne({email: customer.email});
+    // check if transaction id already exist
+    const transactionExist = await Transaction.findOne({ transactionId: id });
 
-    //check if user have a wallet, else create wallet
+    if (transactionExist) {
+        return res.status(409).send("Transaction Already Exist");
+    }
+
+    //check if customer exist in our database
+    const user = await User.findOne({ email: customer.email });
+
+    //check if user has a wallet, else create wallet
     const wallet = await validateUserWallet(user._id);
 
     //create wallet transaction
-    await createTransaction(user._id, id, status, currency, amount, customer);
+    await createWalletTransaction(user._id, status, currency, amount);
 
-    await updateWallet(user._id, amount);
+    //create transaction
+    await createTransaction(user, id, status, currency, amount, customer);
+
+    await updateWallet(user, amount);
 
     return res.status(200).json({
         response: "Wallet funded successfully",
         data: wallet,
     });
-
-    
 });
 
 //Vallidating User Wallet
-const validateUserWallet = async (userId)=> {
+const validateUserWallet = async (userId) => {
     try {
         //check if user has a wallet, else create wallet
-        const userWallet = await Wallet.findOne({ userId});
+        const userWallet = await Wallet.findOne({ userId });
 
         //If user wallet doesn't exist, creat a now one
-        if(!userWallet) {
+        if (!userWallet) {
             //create wallet
             const wallet = await Wallet.create({
                 userId,
@@ -115,11 +123,11 @@ const validateUserWallet = async (userId)=> {
     } catch (error) {
         console.log(error);
     }
-}
+};
 
 //Create Wallet Transaction
 const createWalletTransaction = async (userId, status, currency, amount) => {
-    try{
+    try {
         //Create wallet Transaction
         const walletTransaction = await WalletTransaction.create({
             amount,
@@ -167,9 +175,9 @@ const updateWallet = async (userId, amount) => {
     try {
         //Update wallet
         const wallet = await Wallet.findOneAndUpdate(
-            {userId},
-            {$inc: {balance: amount}},
-            {new: true}
+            { userId },
+            { $inc: { balance: amount } },
+            { new: true }
         );
         return wallet;
 
@@ -178,6 +186,16 @@ const updateWallet = async (userId, amount) => {
     }
 };
 
+app.get("wallet/:userId/balance", async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const wallet = await Wallet.findOne({ userId });
+        res.status(200).json(wallet.balance);
+    } catch (err) {
+        console.log(err);
+    }
+})
 app.listen(port, () => {
     console.log(`Server is live on PORT: ${port}`);
 })
