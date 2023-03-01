@@ -1,10 +1,10 @@
-var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/";
+const MongoClient = require('mongodb').MongoClient;
 
-MongoClient.connect(url, function(err, db) {
+
+MongoClient.connect(process.env.DATABASE_URL, function(err, db) {
   if (err) throw err;
-  var dbo = db.db("ewallet");
-  var myobj = { balance: 1000, userId: 38298329 };
+  const dbo = db.db("ewallet");
+  const myobj = { balance: 1000, userId: 38298329 };
   dbo.collection("wallet").insertOne(myobj, function(err, res) {
     if (err) throw err;
     console.log("1 document inserted");
