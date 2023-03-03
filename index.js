@@ -89,10 +89,10 @@ app.get("/response", async (req, res) => {
     const user = await User.findOne({ email: customer.email });
 
     //check if user has a wallet, else create wallet
-    const wallet = await validateUserWallet(user._id);
+    const wallet = await validateUserWallet(customer.userId);
 
     //create wallet transaction
-    await createWalletTransaction(user._id, status, currency, amount);
+    await createWalletTransaction({userId: customer.userId}, status, currency, amount);
 
     //create transaction
     await createTransaction(user, id, status, currency, amount, customer);

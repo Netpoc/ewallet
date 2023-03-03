@@ -1,11 +1,14 @@
 //User Data Model Setup
-const mongoose = require("mongoose");
+const {Schema, model} = require("mongoose");
 
-const userSchema = new mongoose.Schema({
+const userSchema = Schema(
+    {
     first_name: {type: String, default: null},
     last_name: {type: String, default: null},
     email: {type: String, unique: true},
     password: {type: String},
-});
+    wallet: {type: Schema.Types.ObjectId, ref: 'wallet'}
+}, 
+{timeStamp: true});
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = model("User", userSchema);

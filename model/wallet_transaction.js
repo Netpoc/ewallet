@@ -1,13 +1,13 @@
-const mongoose = require("mongoose");
+const {Schema, model} = require("mongoose");
 
-const walletTransactionSchema = new mongoose.Schema(
+const walletTransactionSchema = Schema(
     {
         amount: {type: Number, default: 0},
 
         userId: {
-            type: String,
-            ref: "users",
+            type: Schema.Types.ObjectId,
             required: true,
+            ref: "User",
         },
         isInFlow: { type: Boolean},
         paymentMethod: { type: String, default: "flutterwave"},
@@ -27,4 +27,4 @@ const walletTransactionSchema = new mongoose.Schema(
     { timestamps: true}
 );
 
-module.exports = mongoose.model("walletTransaction", walletTransactionSchema);
+module.exports = model("walletTransaction", walletTransactionSchema);

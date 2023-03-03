@@ -13,26 +13,27 @@ exports.userRegister = [
 
             if(!(email && password && first_name && last_name)) {
                 res.status(400).send("All input is required");
-            }
+            } else {
+                encryptedPassword = await bcrypt.hash(password, 10);
 
-            encryptedPassword = await bcrypt.hash(password, 10);
-
-            const user = await User.create({
+                const user = await User.create({
                 first_name,
                 last_name,
                 email: email.toLowerCase(),
                 password: encryptedPassword,
-            });
+                });
 
-            const token = jwt.sign(
+                const token = jwt.sign(
                 {user_id: user._id, email},
-                process.env.TOKEN_KEY,
+                process.env.TOKEN,
                 {
                     expiresIn: "2h",
                 }
             );
             user.token = token;
             res.status(201).json(user);
+            }
+            
         } catch (err) {
             console.log(err);
         }
@@ -54,7 +55,7 @@ exports.userLogin = [
             if (user && (await bcrypt.compare(password, user.password))) {
                 const token = jwt.sign(
                     {user_id: user._id, email},
-                    process.env.TOKEN_KEY,
+                    process.env.TOKEN,
                     {
                         expiresIn: "2h",
                     }

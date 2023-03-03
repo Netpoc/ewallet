@@ -12,4 +12,4 @@ const walletSchema = Schema(
     {timestamps: true}
 );
 
-module.exports = model("wallet", walletSchema);
+module.exports = model("Wallet", walletSchema);
