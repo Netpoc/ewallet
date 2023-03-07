@@ -16,7 +16,7 @@
         FlutterwaveCheckout({
           public_key: "FLWPUBK_TEST-8eab40e2d2efbc4c17101f2b6507e0c4-X",
           tx_ref: "hooli-tx-1920bbtyt092",
-          amount: 5000,
+          amount: 3000,
           currency: "NGN",
           country: "NG",
           payment_options: "card",
@@ -26,11 +26,10 @@
 
           // use customer details if user is not logged in, else add user_id to the request
           customer: {
-            user_id: "64007f858a26f39adae3cd1e",
-            email: "test@email.com",
-            phone_number: "08088098622",
-            first_name: "Yetunde",
-            last_name: "Oloye"
+            id: "640659bdc37329e4e9b45e71",
+            email: "monday@user.com",
+            phone_number: 08088098622,
+            name: "Yetunde Oloye",
           },
           callback: function (data) {
             console.log(data);

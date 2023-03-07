@@ -13,6 +13,7 @@ const express = require("express");
 
 //Services
 const userLogic = require("./services/userServices");
+const bodyParser = require("body-parser");
 
 
 
@@ -22,6 +23,7 @@ const port = process.env.PORT || 5000;
 const app = express();
 
 app.use(express.json());
+app.use(bodyParser.urlencoded({extended: false}));
 
 app.use("/user", userLogic);
 
@@ -76,7 +78,9 @@ app.get("/response", async (req, res) => {
         },
     });
 
-    const { status, currency, id, amount, customer } = response.data.data;
+    console.log(response.data);
+
+    const { userId, status, currency, id, amount, customer } = response.data.data;
 
     // check if transaction id already exist
     const transactionExist = await Transaction.findOne({ transactionId: id });
@@ -89,10 +93,10 @@ app.get("/response", async (req, res) => {
     const user = await User.findOne({ email: customer.email });
 
     //check if user has a wallet, else create wallet
-    const wallet = await validateUserWallet(customer.userId);
+    const wallet = await validateUserWallet(user);
 
     //create wallet transaction
-    await createWalletTransaction({userId: customer.userId}, status, currency, amount);
+    await createWalletTransaction(user, status, currency, amount);
 
     //create transaction
     await createTransaction(user, id, status, currency, amount, customer);
@@ -107,6 +111,7 @@ app.get("/response", async (req, res) => {
 
 //Vallidating User Wallet
 const validateUserWallet = async (userId) => {
+    
     try {
         //check if user has a wallet, else create wallet
         const userWallet = await Wallet.findOne({ userId });
