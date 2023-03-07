@@ -2,6 +2,7 @@
 const bcrypt = require ("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../model/user");
+const Wallet = require("../model/wallet");
 
 //User registration logic
 exports.userRegister = [ 
@@ -71,3 +72,14 @@ exports.userLogin = [
         }
     }
 ]
+
+exports.getUser = [ async(req, res) => {
+    try {
+        const {id} = req.body;
+        const user = await User.findOne({id});
+        const wallet = await Wallet.findOne({id});
+        res.status(200).send(JSON.stringify({user, wallet}));
+    }catch(err){
+        console.log(err);
+    }
+}]

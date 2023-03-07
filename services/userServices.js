@@ -9,4 +9,7 @@ router.post("/register", userControls.userRegister);
 //User login
 router.post("/login", userControls.userLogin);
 
+//Get User
+router.get("/getuser", userControls.getUser);
+
 module.exports = router;
